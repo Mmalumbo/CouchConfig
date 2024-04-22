@@ -1,0 +1,25 @@
+[
+    {
+        "name": "fs_db_v0",
+        "bucket": "offline-reads",
+        "sync": "function(doc, oldDoc) { if (doc.replRole) { requireRole('replicator'); if (doc.replRole !== 'replicator') { requireRole(doc.replRole); channel(doc.replRole); if (doc.channels && doc.channels.length) { doc.channels.each(function(channel) { channel(doc.replRole + '_' + channel); }); } } } else { channel(doc.channels); } }",
+        "enable_shared_bucket_access": true,
+        "allow_conflicts": false,
+        "revs_limit": 20,
+        "num_index_replicas": 0,
+        "import_docs": true
+    },
+    {
+        "name": "fs_db_v1",
+        "bucket": "offline-writes",
+        "sync": "function sync(doc, oldDoc) { if ( oldDoc && oldDoc.type !== 'api-requests' && doc.type !== 'api-requests' ) { throw({ forbidden: 'document is not api request' }); } var currentUTCDateTime = new Date().toISOString(); if (!oldDoc) { doc.createdAt = currentUTCDateTime; doc.updatedAt = currentUTCDateTime; } if (realUserCtx) { doc.clientUpdatedAt = currentUTCDateTime; } channel(doc.clientEmail); }",
+        "revs_limit": 20,
+        "allow_empty_password": false,
+        "import_backup_old_rev": false,
+        "import_docs": true,
+        "num_index_replicas": 0,
+        "enable_shared_bucket_access":true,
+        "allow_conflicts": false,
+        "old_rev_expiry_seconds": 300
+    }
+]
