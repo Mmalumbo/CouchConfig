@@ -1,0 +1,24 @@
+{
+  "bootstrap": {
+    "server": "couchbase",
+    "server_tls_skip_verify": true,
+    "use_tls_server": false,
+    "username": "bucket_user",
+    "password": "password"
+  },
+  "api": {
+    "admin_interface": "0.0.0.0:4985",
+    "admin_interface_authentication": false,
+    "compress_responses": true,
+    "pretty": true
+  },
+  "logging": {
+    "console": {
+      "enabled": true,
+      "log_level": "info",
+      "log_keys": [
+        "*"
+      ]
+    }
+  }
+}

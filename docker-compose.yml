@@ -1,0 +1,60 @@
+version: "3.9"
+
+volumes:
+  redis:
+  couchbase:
+
+services:
+
+  redis:
+    hostname: redis
+    container_name: redis
+    image: redis:latest
+    restart: always
+
+    environment:
+      - REDIS_HOSTS=redis
+
+    volumes:
+      - redis:/data
+
+    ports:
+      - 6379:6379
+
+  couchbase:
+    hostname: couchbase
+    container_name: couchbase
+
+    build:
+      context: .
+      dockerfile: ./couchbase/server/Dockerfile
+
+    restart: always
+
+    ports:
+      - "8091-8097:8091-8097"
+      - "9123:9123"
+      - "11207:11207"
+      - "11210:11210"
+      - "11280:11280"
+      - "18091-18097:18091-18097"
+
+    volumes:
+      - ./couchbase/server/config.sh:/config.sh
+      - couchbase:/opt/couchbase/var
+
+  sync-gateway:
+    hostname: sync-gateway
+    container_name: sync-gateway
+    image: couchbase/sync-gateway:3.1.5-community
+    restart: always
+    command:
+      - /config.json
+    volumes:
+      - ./couchbase/config.json:/config.json
+    depends_on:
+      - couchbase
+    ports:
+      - "4984:4984"
+      - "4985:4985"
+      - "4986:4986"
